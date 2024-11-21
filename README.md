@@ -11,7 +11,7 @@
 </div>
 
 ## Overview
-This is the official implementation for [**Deep Tabular Learning via Distillation and Language Guidance**](https://openreview.net/pdf?id=p6KIteShzf) (DisTab). DisTab is based on transformer architectures, and leverages distillation pre-training and language-guided embeddings for robust peformance. The repository provides sample code and usage guide.
+This is the official implementation for [**Deep Tabular Learning via Distillation and Language Guidance**](https://openreview.net/pdf?id=p6KIteShzf) (DisTab). DisTab is based on transformer architectures, and leverages distillation pre-training and language-guided embeddings for robust performance. The repository provides sample code and usage guide.
 
 
 ## Requirements
