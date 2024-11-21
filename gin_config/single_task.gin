@@ -1,0 +1,93 @@
+task_name = "adult"
+teacher_model_dir = "saved_model_mod"
+pre_trained_model_dir = "pre_trained_logs"
+fine_tuned_model_dir = "fine_tuned_logs"
+pre_trained_result_path = "llama=3_aug=100000.res"
+fine_tuned_result_path = "auc_new_soup_finetuned.res"
+
+devices = [0]  # Use GPUs e.g. GPU 0
+
+run_task.folds = 5
+run_task.task_name = %task_name
+
+tree_type_metric = {
+    'binary': 'accuracy',
+    'multiclass': 'accuracy',
+    'regression': 'root_mean_squared_error' 
+}
+
+arch_config = {
+    "dim": 4096,
+    "tab_in_dim": 512,
+    "tab_n_head": 8,
+    "tab_n_layer": 3,
+    "cls_token": False,
+    "lm_tokens": True,
+}
+
+run_fold.run_config = {
+    "eval_metric": None,
+    "run_teacher_model": True,
+    "run_DisTab": True, # if true, run DisTab training, including validation and testing.
+
+    "tree_type_metric": %tree_type_metric,
+    "distab_type_metric": {
+        "binary": 0,
+        "multiclass": 1,
+        "regression": 0,
+    },
+}
+
+run_teacher_model.run_config = {
+    "models": ["CAT"],
+    "hyperparameters": None,
+    "save_dir": %teacher_model_dir,
+    "verbose": 0,
+}
+
+get_synthetic_data_splits.tree_type_metric = %tree_type_metric
+
+# pre-training a model
+run_distab.pre_training_config = {
+    "activate_pre_training": True,
+    "teacher_model_dir": %teacher_model_dir,
+    "save_path": %pre_trained_result_path,
+    "log_file": "default_fixed",
+    "devices": %devices,
+
+    "wandb_offline": False,
+    "train_bsz": 1024,
+    "test_bsz": 1024,
+    "lr": 1e-4,
+    "epoch": 30, # 30,
+    "weight_decay": 1e-6,
+    "project_name": "tabular_lm_base",
+    "top_k": 3,
+    "log_root": %pre_trained_model_dir,
+    "augment": 0., 
+    "synthetic": True,
+    "pre_trained": False,
+}
+
+# fine tuning a model
+run_distab.fine_tuning_config = {
+    "activate_fine_tuning": True,
+    "save_path": %fine_tuned_result_path,
+    "log_file": "testing",
+    "devices": %devices,
+
+    "wandb_offline": False,
+    "train_bsz": 128,
+    "test_bsz": 1024,
+    "lr": 1e-4,
+    "epoch": 20, # 20,
+    "weight_decay": 1e-6,
+    "project_name": "tabular_lm_base",
+    "top_k": 3,
+    "log_root": %fine_tuned_model_dir,
+    "augment": 0., 
+    "synthetic": False,
+    "pre_trained": %pre_trained_result_path,
+}
+
+distab_model.arch_config = %arch_config
