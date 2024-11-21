@@ -1,6 +1,6 @@
 <div align="center">
 
-# DisTab: Deep Tabular Learning via Distillation and Language Guidance
+# Deep Tabular Learning via Distillation and Language Guidance
 
 [**Overview**](#overview)
 | [**Requirements**](#requirements)
@@ -11,14 +11,14 @@
 </div>
 
 ## Overview
-This is the official implementation for [**DisTab: Deep Tabular Learning via Distillation and Language Guidance**](https://openreview.net/pdf?id=p6KIteShzf). DisTab is based on transformer architectures, and leverages distillation pre-training and language-guided embeddings for robust peformance. The repository provides sample code and usage guide.
+This is the official implementation for [**Deep Tabular Learning via Distillation and Language Guidance**](https://openreview.net/pdf?id=p6KIteShzf) (DisTab). DisTab is based on transformer architectures, and leverages distillation pre-training and language-guided embeddings for robust peformance. The repository provides sample code and usage guide.
 
 
 ## Requirements
 Key dependencies include PyTorch, PyTorch Lightning, OpenML, AutoGluon, gin-config, scikit-learn, and pandas.
 
 ## Datasets
-We preprocess several [datasets](https://drive.google.com/file/d/1P26lMRBLFpbgmTlXoAelGvtqQcfJn045/view?usp=sharing) from OpenML for running DisTab. The pre-processed datasets include the language-guided embeddings as described in the paper, using [Llama-3-8B](https://www.llama.com/llama-downloads/) as the embedding model. To use the datasets, download them into the `dataset` folder, origanized as follows:
+We preprocess several [datasets](https://drive.google.com/file/d/1P26lMRBLFpbgmTlXoAelGvtqQcfJn045/view?usp=sharing) from OpenML for running DisTab. The pre-processed datasets include the language-guided embeddings as described in the paper, using [Llama-3-8B](https://www.llama.com/llama-downloads/) as the embedding model. To use the datasets, download and unzip them under the repo. `dataset` folder should be created and origanized as follows:
 
 ```
 dataset
