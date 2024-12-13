@@ -185,3 +185,9 @@ lightning_logs
 saved_ag_full
 ag_test
 ag_cat_distill
+
+
+
+
+.vscode/
+dataset/

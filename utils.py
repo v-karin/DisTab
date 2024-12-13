@@ -1,10 +1,10 @@
 from config import openml_data_path
-import glob, json
+import glob, json, os
 
 def construct_task_list():
     ret = {}
     for path in glob.glob(f"{openml_data_path}/*/head.json"):
-        segs = path.split("/")
+        segs = path.split(os.path.sep)
         task_name = segs[-2]
         with open(path, "r") as fd:
             header_info = json.load(fd)

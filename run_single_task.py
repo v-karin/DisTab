@@ -282,6 +282,19 @@ def test_main(trainer, wrapper, data, metric_type, log_root, scaling=1., checkpo
     wrapper.train()
     return ret
 
+def new_trainer(run_config, cbs, train_data):
+    gpu = "gpu" if torch.cuda.is_available() else "cpu"
+    devices = run_config["devices"] if (gpu == "gpu") else 1
+    return L.Trainer(max_epochs=run_config["epoch"],
+                     callbacks= cbs,
+                     logger=False,
+                     accelerator=gpu,
+                     devices=devices,
+                     num_nodes=1,
+                     deterministic=True,
+                     log_every_n_steps=min(50, len(train_data.data_loader))
+                     )
+
 @gin.configurable
 def distab_model(arch_config, run_config, task_type_metric, task_name, task_type, task, tab_data, fold):
     print("Run distab_model...") 
@@ -319,31 +332,23 @@ def distab_model(arch_config, run_config, task_type_metric, task_name, task_type
         
     tab_model = build_model(**arch_config, num_ind=train_data.num_ind, cat_size=train_data.get_cat_size(),
                             out_dim=out_dim, cat_embed_size=cat_embed_size)
-    
+
     tab_in_dim = arch_config["tab_in_dim"]
     raw_tokens = arch_config["lm_tokens"]
     exp_name = f"{task_name}_{tab_in_dim}_{raw_tokens}_{fold}"
 
     csv_logger = CSVLogger(run_config["log_root"], exp_name)
     save_dir = csv_logger.log_dir
-    
+
     csv_logger.log_hyperparams(arch_config | run_config)
-    
+
     cbs = []
     for name, mode in metric_names:
         monitor = f"{name}/dataloader_idx_0"
         tmp = ModelCheckpoint(dirpath=save_dir, save_top_k=run_config["top_k"], monitor=monitor, filename=f"{name}-{{epoch}}", mode=mode)
         cbs.append(tmp)
-        
-    trainer = L.Trainer(max_epochs=run_config["epoch"],
-                        callbacks= cbs,
-                        logger=False,
-                        accelerator='gpu',
-                        devices=run_config["devices"],
-                        num_nodes=1,
-                        deterministic=True,
-                        log_every_n_steps=min(50, len(train_data.data_loader))
-                        )
+
+    trainer = new_trainer(run_config, cbs, train_data)
     wrapper = LModule(tab_model, run_config["lr"], task_type, num_labels=train_data.get_label_count(), test_names=["val", "test"], batch_size=batch_size)
 
     parameters = tab_model.parameters()
@@ -481,7 +486,7 @@ def run_fold(run_config, task_name, fold, folds_ret_pre_training, folds_scale_pr
         train_indices, test_indices = task.get_train_test_split_indices(repeat=0, fold=fold)
         train_data = df.iloc[train_indices]
         test_data = df.iloc[test_indices]
-        
+
         teacher_models, teacher_models_ret = run_teacher_model(task_name=task_name, task_type=task_type, fold=fold, eval_metric=tree_eval_metric, label_header=label_header, train_data=train_data, test_data=test_data)
 
     if run_config["run_DisTab"]:
@@ -531,7 +536,6 @@ def run_task(task_name, folds):
 
     if folds_ret_teacher:
         save_tree_result(task_name, task_type, eval_metric, teacher_models, folds_ret_teacher)
-    
 
 def bind_nested_dict_param(gin_key_path, value):
     keys = gin_key_path.split(".")
@@ -540,7 +544,7 @@ def bind_nested_dict_param(gin_key_path, value):
     base_dict = gin.query_parameter(base_key)
     base_dict[nested_key] = value
     gin.bind_parameter(base_key, base_dict)
-    
+
 def override_gin_param(args):
     if args.task_name is not None:
         gin.bind_parameter("run_task.task_name", args.task_name)
@@ -554,11 +558,11 @@ def override_gin_param(args):
 def run_task_by_gin(args):
     gin.parse_config_file(args.gin_file)
     override_gin_param(args)
-    
+
     run_task()
 
 if __name__ == "__main__":
     parser = get_parser()
     args = parser.parse_args()
-    
+
     run_task_by_gin(args)
