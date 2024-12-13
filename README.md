@@ -80,7 +80,7 @@ If you find [**DisTab**](https://openreview.net/pdf?id=p6KIteShzf) helpful in yo
 
 As of 1.2.0, AutoGluon currently has an issue with using an outdated version of TorchMetrics, which may or may not cause an error when using with newer versions of pyTorch.
 
-AutoGluon 1.2.0 requires TorchMetrics 1.2.1 despite there being an existing 1.6.0 release, and still uses the latest version of pyTorch.
+AutoGluon 1.2.0 requires TorchMetrics 1.2.1 despite there being an existing 1.6.0 release, and still uses the latest version of pyTorch. There are already plans to bump the version requirements of TorchMetrics [up to 1.6.0](https://github.com/autogluon/autogluon/issues/4719) by AutoGluon release 1.3. Otherwise, updating TorchMetrics up to 1.6.0 despite AutoGluon's requirements may be an option.
 
 ```
 TorchMetrics 1.2.1: pyTorch 1.8.1-2.1.1
