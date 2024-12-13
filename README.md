@@ -75,3 +75,14 @@ If you find [**DisTab**](https://openreview.net/pdf?id=p6KIteShzf) helpful in yo
   year={2024}
 }
 ``` -->
+
+## Forker's Notes
+
+As of 1.2.0, AutoGluon currently has an issue with using an outdated version of TorchMetrics, which may or may not cause an error when using with newer versions of pyTorch.
+
+AutoGluon 1.2.0 requires TorchMetrics 1.2.1 despite there being an existing 1.6.0 release, and still uses the latest version of pyTorch.
+
+```
+TorchMetrics 1.2.1: pyTorch 1.8.1-2.1.1
+AutoGluon 1.2.0:    pyTorch 2.2-2.5.1      (< 2.6)
+```
